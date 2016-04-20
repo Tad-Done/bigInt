@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const unsigned maxLength(300);
+const unsigned maxLength(100);
 
 class BigInt{
     friend ostream &operator<<(ostream &os,const BigInt &obj);
@@ -21,6 +21,7 @@ class BigInt{
     friend bool operator<=(const BigInt&,const BigInt&);
     friend bool operator>=(const BigInt&,const BigInt&);
     friend bool operator==(const BigInt&,const BigInt&);
+    friend bool operator!=(const BigInt&,const BigInt&);
     friend BigInt power(const BigInt&,unsigned m);
     friend BigInt modOfPower(const BigInt&,unsigned m,const BigInt&);
     friend BigInt abs(const BigInt&);
@@ -232,6 +233,12 @@ bool operator==(const BigInt &n1,const BigInt &n2)
     else return false;
 }
 
+bool operator!=(const BigInt &n1,const BigInt &n2)
+{
+    if(n1.compare(n2)!=0)return true;
+    else return false;
+}
+
 BigInt abs(const BigInt &n)
 {
     BigInt ans(n);
@@ -302,12 +309,12 @@ BigInt operator-(const BigInt &n1,const BigInt &n2)
 BigInt operator*(const BigInt &n1,const BigInt &n2)
 {
     BigInt ans;
-    ans.sig=!(n1.sig^n2.sig);
     for(unsigned i=n2.length;i!=0;i--){
         ans=ans+n1.multionenum(n2.num[i-1]-'0');
         if(i!=1)
             ans.shl(1);
     }
+    ans.sig=!(n1.sig^n2.sig);
     return ans;
 }
 
@@ -326,6 +333,7 @@ BigInt operator/(const BigInt &n1,const BigInt &n2)
             ans.num[i-1]='0'+d;
             if(ans.length<i&&d!=0)ans.length=i;
         }
+        ans.sig=!(n1.sig^n2.sig);
         return ans;
     }
 }
@@ -423,6 +431,39 @@ BigInt::operator int()const
     if(!sig)
         result*=-1;
     return result;
+}
+
+BigInt gcd(const BigInt &a,const BigInt &b)
+{
+    if(a!=0&&b!=0){
+        BigInt r=a%b,ta=a,tb=b;
+        while(r!=0){
+            ta=tb;
+            tb=r;
+            r=ta%tb;
+        }
+        return tb;
+    }
+}
+
+void bezout(BigInt a,BigInt b)
+{
+    if(a!=0&&b!=0){
+        BigInt r=a%b,s=0,os=1,t=1,ot=0,q=a/b,tmp;
+        while(r!=0){
+            tmp=s;
+            s=os-q*s;
+            os=tmp;
+            tmp=t;
+            t=ot-q*t;
+            ot=tmp;
+            a=b;b=r;
+            r=a%b;
+            q=a/b;
+            cout<<os<<'\t'<<ot<<endl;
+        }
+        cout<<s<<'\t'<<t<<endl;
+    }
 }
 
 #endif // BIGINT_H_INCLUDED
