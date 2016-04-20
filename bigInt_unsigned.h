@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const unsigned maxLength(400);
+const unsigned maxLength(100);
 
 class BigInt{
     friend ostream &operator<<(ostream &os,const BigInt &obj);
