@@ -13,7 +13,7 @@ int Legendre(BigInt a,BigInt p)
 
 int main()
 {
-    BigInt a=1245,b=1823;
-    bezout(a,b);
+    BigInt a=(1<<30)-1,b=127871392;
+    cout<<int(a)<<endl;
     return 0;
 }

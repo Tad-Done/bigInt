@@ -446,10 +446,10 @@ BigInt gcd(const BigInt &a,const BigInt &b)
     }
 }
 
-void bezout(BigInt a,BigInt b)
+BigInt mod_inv(const BigInt &a,const BigInt &b)
 {
     if(a!=0&&b!=0){
-        BigInt r=a%b,s=0,os=1,t=1,ot=0,q=a/b,tmp;
+        BigInt ta(a),tb(b),r=a%b,s=0,os=1,t=1,ot=0,q=a/b,tmp;
         while(r!=0){
             tmp=s;
             s=os-q*s;
@@ -457,12 +457,14 @@ void bezout(BigInt a,BigInt b)
             tmp=t;
             t=ot-q*t;
             ot=tmp;
-            a=b;b=r;
-            r=a%b;
-            q=a/b;
-            cout<<os<<'\t'<<ot<<endl;
+            ta=tb;tb=r;
+            r=ta%tb;
+            q=ta/tb;
+            //cout<<os<<'\t'<<ot<<endl;
         }
-        cout<<s<<'\t'<<t<<endl;
+        if(s<0)
+            s=s+b;
+        return s;
     }
 }
 
