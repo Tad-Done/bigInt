@@ -362,7 +362,7 @@ BigInt BigInt::modOfPower(unsigned m,BigInt n) //a^m==p(mod n)
 {
     BigInt t(*this),r=1;
     for(unsigned i=32;i!=0;i--){
-        if(m&1!=0){
+        if((m&1)!=0){
             r=(r*t)%n;
             t=t.power(2)%n;
         }
@@ -444,6 +444,7 @@ BigInt gcd(const BigInt &a,const BigInt &b)
         }
         return tb;
     }
+    return 0;
 }
 
 BigInt mod_inv(const BigInt &a,const BigInt &b)
@@ -460,12 +461,15 @@ BigInt mod_inv(const BigInt &a,const BigInt &b)
             ta=tb;tb=r;
             r=ta%tb;
             q=ta/tb;
-            //cout<<os<<'\t'<<ot<<endl;
+            //cout<<s<<'\t'<<t<<endl;
         }
         if(s<0)
-            s=s+b;
+            s=(s+b)%b;
         return s;
     }
+    return 0;
 }
+
+
 
 #endif // BIGINT_H_INCLUDED
