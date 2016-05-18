@@ -2,6 +2,10 @@
 #define BIGINT_H_INCLUDED
 
 #include<iostream>
+#include<stdlib.h>
+#include<time.h>
+
+//#include "listOfPrime.h"
 
 using namespace std;
 
@@ -23,7 +27,7 @@ class BigInt{
     friend bool operator==(const BigInt&,const BigInt&);
     friend bool operator!=(const BigInt&,const BigInt&);
     friend BigInt power(const BigInt&,unsigned m);
-    friend BigInt modOfPower(const BigInt&,unsigned m,const BigInt&);
+    //friend BigInt modOfPower(const BigInt&,unsigned m,const BigInt&);
     friend BigInt abs(const BigInt&);
 
 private:
@@ -413,6 +417,21 @@ BigInt modOfPower(const BigInt &obj,unsigned m,const BigInt &n)
     return r;
 }
 
+BigInt modOfPower(const BigInt &obj,const BigInt &m,const BigInt &n)
+{
+    BigInt t(obj),r=1,tmp(m);
+    for(;tmp!=0;tmp=tmp/2){
+        if(tmp%2!=0){
+            r=(r*t)%n;
+            t=t.power(2)%n;
+        }
+        else{
+            t=t.power(2)%n;
+        }
+    }
+    return r;
+}
+
 BigInt BigInt::operator-()const
 {
     BigInt ans=this->nega();
@@ -470,6 +489,66 @@ BigInt mod_inv(const BigInt &a,const BigInt &b)
     return 0;
 }
 
+unsigned euler(unsigned n)
+{
+    unsigned ret=1,i;
+    for(i=2;i*i<=n;i++){
+        if(n%i==0){
+            n/=i;
+            ret*=i-1;
+            while(n%i==0){
+                n/=i;
+                ret*=i;
+            }
+        }
+    }
+    if(n>1)
+        ret*=n-1;
+    return ret;
+}
 
+BigInt randBInt(const BigInt &low,const BigInt &high)
+{
+    BigInt range(high-low+1);
+    unsigned bit=1;
+    while(range>RAND_MAX){
+        bit++;
+        range=range/(RAND_MAX+1);
+    }
+    BigInt res=0;
+    for(unsigned i=0;i<bit;i++){
+        res=res*(RAND_MAX+1)+rand();
+    }
+    res=res%(high-low+1)+low;
+    return res;
+}
+
+bool isPrime(const BigInt &n,unsigned para=10)
+{
+    if(n==2)return true;
+    if(n%2==0)return false;
+    if(n==3)return true;
+    BigInt t(n-1);
+    unsigned s=0;
+    while(t%2==0){
+        t=t/2;
+        s++;
+    }
+    BigInt b,r;
+    for(;para!=0;para--){
+        b=randBInt(2,n-2);
+        r=modOfPower(b,t,n);
+        if(r==1 or r==n-1)continue;
+        else{
+            if(s==1)return false;
+            for(unsigned i=1;i<s;i++){
+                r=modOfPower(r,2,n);
+                if(r==n-1)break;
+                if(i==s-1)return false;
+            }
+        }
+    }
+    return true;
+}
 
 #endif // BIGINT_H_INCLUDED

@@ -1,17 +1,6 @@
 #ifndef LISTOFPRIME_H_INCLUDED
 #define LISTOFPRIME_H_INCLUDED
 
-unsigned intsqrt(unsigned num)
-{
-    unsigned tmp=num;
-    unsigned len=0;
-    for(;tmp!=0;len++){
-        tmp>>=1;
-    }
-    tmp=num>>(len/2+1);
-    for(;tmp*tmp<=num;tmp++);
-    return tmp-1;
-}
 
 bool isPrime(unsigned num)
 {
@@ -44,18 +33,36 @@ private:
     node *head;
     unsigned num;
 
+    class list_iterator{
+    private:
+        node *cur;
+
+    public:
+        void operator=(node *ptr){cur=ptr;}
+        void operator++()
+        {
+            if(cur->next!=NULL)
+                cur=cur->next;
+        }
+        unsigned getprime(){return cur->prime;}
+        unsigned getpow(){return cur->pow;}
+        bool isEnd(){return !cur->next;}
+    };
+
 public:
     listOfPrime():num(0){head=new node(0,0);}
     listOfPrime(unsigned num):num(0){head=new node(0,0);primeFact(num);}
     ~listOfPrime(){clear();delete head;}
 
     void clear();
+    node *begin(){return head;}
     void print()const;
     unsigned numOfPrime(){return num;}
     void addBoth(unsigned p,unsigned m=1);
     void addPrime(unsigned p);
     unsigned checkPow(unsigned p)const;
     void primeFact(unsigned num);
+    typedef list_iterator iterator;
 };
 
 void listOfPrime::clear()
@@ -133,6 +140,41 @@ void listOfPrime::primeFact(unsigned num)
         }
     }
     delete []numlist;
+}
+
+/*int jacobiBetPrime()
+{
+
+}*/
+
+int jacobi(unsigned a,unsigned p)
+{
+    if(a%p==0)return 0;
+    a%=p;
+    if(a==1)return 1;
+    if(a==p-1){
+        if(((p-1)/2)%2==1)return -1;
+        else return 1;
+    }
+    if(a==2){
+        if(((p*p-1)/8)%2==1)return -1;
+        else return 1;
+    }
+    if(isPrime(a)){
+        int tmp(1);
+        if(((p-1)*(a-1)/4)%2==1)tmp=-1;
+        return tmp*jacobi(p,a);
+    }
+    listOfPrime alist(a);
+    listOfPrime::iterator itra;
+    itra=alist.begin();
+    int tmp=1;
+    for(unsigned i=alist.numOfPrime();i!=0;i--){
+        ++itra;
+        if(itra.getpow()%2==1)
+            tmp*=jacobi(itra.getprime(),p);
+    }
+    return tmp;
 }
 
 #endif // LISTOFPRIME_H_INCLUDED
